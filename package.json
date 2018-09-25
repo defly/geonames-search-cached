@@ -1,7 +1,7 @@
 {
   "name": "geonames-search-cached",
   "version": "0.1.1",
-  "description": "Geonames search api cached in Redis",
+  "description": "Geonames Search API cached in Redis",
   "main": "index.js",
   "scripts": {
     "test": "node test/manual.js"
