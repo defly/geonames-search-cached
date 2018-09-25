@@ -19,7 +19,7 @@ const cities = [
 ];
 
 cities.forEach(c => {
-  search({ username: 'defly' })(c)
+  search({ username: 'demo' })(c)
     .then(console.log)
     .catch(console.error);
 });
