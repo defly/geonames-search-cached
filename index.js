@@ -23,11 +23,14 @@ const search = options => {
 
   const saveEntity = query => e => {
     if (e) {
-      return set(`${queryPrefix}:${query}`, JSON.stringify(e.geonameId)).then(
-        () => set(`${entityPrefix}:${e.geonameId}`, JSON.stringify(e)) && e
-      );
+      const id = JSON.stringify(e.geonameId);
+      const entity = JSON.stringify(e);
+      return Promise.all([
+        set(`${queryPrefix}:${query}`, id),
+        set(`${entityPrefix}:${e.geonameId}`, entity)
+      ]).then(() => e);
     } else {
-      return set(`${queryPrefix}:${query}`, JSON.stringify(null)) && null;
+      return set(`${queryPrefix}:${query}`, 'null').then(() => null);
     }
   };
 
