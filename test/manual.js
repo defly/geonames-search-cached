@@ -1,4 +1,6 @@
-const search = require('./../index');
+const search = require('./../index')({
+  username: 'defly'
+});
 
 const cities = [
   'Odesa, Ukraine',
@@ -19,7 +21,7 @@ const cities = [
 ];
 
 cities.forEach(c => {
-  search({ username: 'demo' })(c)
+  search(c)
     .then(console.log)
     .catch(console.error);
 });
