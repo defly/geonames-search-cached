@@ -1,5 +1,6 @@
 # geonames-search-cached
 Wrapper for http://api.geonames.org/searchJSON endpoint with results caching in Redis.
+Use if you need frequent geo toponym resolution by input string.
 
 ## Install
 
@@ -20,7 +21,7 @@ const search = require('geonames-search-cached')({
   username: 'demo' // username from geonames
 });
 
-search('Kyiv, Ukraine')
+search({q: 'Kyiv, Ukraine', maxRows: 1})
   .then(console.log)
   .catch(console.error);
 
