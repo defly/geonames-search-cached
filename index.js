@@ -1,14 +1,15 @@
 const redis = require('redis');
 const fetch = require('node-fetch');
+const { stringify: toQuery } = require('querystring');
 const { promisify } = require('util');
 
-const url = (query, username) =>
-  `http://api.geonames.org/searchJSON?q=${query}&username=${username}&maxRows=1`;
+const url = (params, username) =>
+  `http://api.geonames.org/searchJSON?${toQuery(params)}&username=${username}`;
 
-const fetchEntity = (query, username) =>
-  fetch(url(query, username))
+const fetchEntity = (params, username) =>
+  fetch(url(params, username))
     .then(res => res.json())
-    .then(({ geonames }) => geonames.pop() || null);
+    .then(({ geonames }) => geonames[0] || null);
 
 const search = options => {
   const {
@@ -21,7 +22,8 @@ const search = options => {
   const get = promisify(client.get).bind(client);
   const set = promisify(client.set).bind(client);
 
-  const saveEntity = query => e => {
+  const saveEntity = params => e => {
+    const query = toQuery(params);
     if (e) {
       const id = JSON.stringify(e.geonameId);
       const entity = JSON.stringify(e);
@@ -34,20 +36,20 @@ const search = options => {
     }
   };
 
-  const resolveEntity = query => geonameId =>
+  const resolveEntity = params => geonameId =>
     get(`${entityPrefix}:${geonameId}`).then(
       entity =>
         entity
           ? JSON.parse(entity)
-          : fetchEntity(query, username).then(saveEntity(query))
+          : fetchEntity(params, username).then(saveEntity(params))
     );
 
-  return query =>
-    get(`${queryPrefix}:${query}`).then(id => {
+  return params =>
+    get(`${queryPrefix}:${toQuery(params)}`).then(id => {
       if (id === 'null') {
         return null;
       } else {
-        return resolveEntity(query)(id);
+        return resolveEntity(params)(id);
       }
     });
 };
